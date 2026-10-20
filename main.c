@@ -31,7 +31,6 @@
 #define TIT_PREVENTA 3
 #define TIT_DESC 4
 
-/* 4 tipos primitivos */
 struct Pase {
     int codigo;
     int tipo;
@@ -39,7 +38,7 @@ struct Pase {
     int estado;
 };
 
-/* Datos del cliente y su estado en la tienda (7 tipos primitivos + 1 puntero) */
+/* Datos del cliente y su estado en la tienda  */
 struct Cliente {
     char rut[MAX_TXT];
     char nombre[MAX_TXT];
@@ -51,13 +50,13 @@ struct Cliente {
     struct Pase *pase;
 };
 
-/* Lista doblemente enlazada general de clientes (Encapsulamiento 1) */
+/* Lista doblemente enlazada general de clientes */
 struct NodoCliente {
     struct Cliente *datos;
     struct NodoCliente *ant, *sig;
 };
 
-/* Reserva individual en una fila (3 tipos primitivos + 1 puntero) */
+/* Reserva individual en una fila  */
 struct Reserva {
     int numero;              /* Numero unico de la reserva */
     struct Cliente *cliente; /* Puntero directo al cliente */
@@ -65,7 +64,7 @@ struct Reserva {
     int horaRegistro;        /* Hora en HHMM  */
 };
 
-/* Nodo simple para la cola de reservas (Encapsulamiento 2) */
+/* Nodo simple para la cola de reservas */
 struct NodoReserva {
     struct Reserva *datos;
     struct NodoReserva *sig;
@@ -79,7 +78,7 @@ struct ColaReservas {
     int totalEjemplares;  /* Suma real de comics pedidos en la fila */
 };
 
-/* Informacion de cada titulo/comic (12 tipos primitivos + 1 puntero) */
+/* Informacion de cada titulo/comic  */
 struct Titulo {
     int codigo;
     char nombre[MAX_TXT];
@@ -96,13 +95,13 @@ struct Titulo {
     struct ColaReservas *listaEspera;
 };
 
-/* Arbol Binario de Busqueda - ABB (Encapsulamiento 3) */
+/* Arbol Binario de Busqueda - ABB  */
 struct NodoTitulo {
     struct Titulo *datos;
     struct NodoTitulo *izq, *der;
 };
 
-/* Estructura de cada sala tematica (8 tipos primitivos + 1 puntero al ABB) */
+/* Estructura de cada sala tematica  */
 struct Sala {
     int codigo;
     char nombre[MAX_TXT];
