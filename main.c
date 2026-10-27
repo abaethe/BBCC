@@ -134,3 +134,105 @@ struct Tienda {
 
     struct NodoCliente *headClientes; /* Lista doblemente enlazada */
 };
+
+/*===============================================================================================================
+ *  CLAUDIO
+ =============================================================================================================== */
+
+int agregarReservaCola(struct Titulo *titulo, struct Cliente *cliente, int cantidad, int numReserva, int hora);
+
+struct Reserva* buscarReservaCola(struct ColaReservas *cola, int numeroReserva);
+
+int modificarReservaCola(struct ColaReservas *cola, int numeroReserva, int nuevaCantidad);
+
+int eliminarReservaCola(struct ColaReservas *cola, int numeroReserva);
+
+void listarReservasCola(struct ColaReservas *cola);
+
+/*===============================================================================================================
+ * Cristopher
+ =============================================================================================================== */
+
+void ordenarSalas(struct Tienda *tienda, int criterio);
+
+int agregarSala(struct Tienda *tienda, struct Sala *nuevaSala);
+
+int buscarSala(struct Tienda *tienda, int codigoBuscado);
+
+int modificarSala(struct Tienda *tienda, int codigo);
+
+void listarSalas(struct Tienda *tienda);
+
+/*===============================================================================================================
+ * Benja Grez culo
+ =============================================================================================================== */
+
+struct NodoTitulo* agregarTituloABB(struct NodoTitulo *raiz, struct Titulo *nuevoTitulo);
+
+struct Titulo* buscarTituloABB(struct NodoTitulo *raiz, int codigo);
+
+int modificarTitulo(struct Titulo *titulo);
+
+struct NodoTitulo* eliminarTituloABB(struct NodoTitulo *raiz, int codigo);
+
+void listarTitulosABB(struct NodoTitulo *raiz);
+
+int calcularTiempoEsperaTitulo(struct Titulo *titulo);
+
+void reporteTituloMasEsperado(struct Tienda *tienda);
+
+void reporteTituloMasSolicitado(struct Tienda *tienda);
+
+void listarTitulosAgotados(struct Tienda *tienda);
+
+/*===============================================================================================================
+ * Benja Garcia pene
+ =============================================================================================================== */
+
+struct Pase* crearPase(int codigo, int tipo, long valor);
+
+struct Cliente* buscarClientePorRut(struct NodoCliente *head, char *rut);
+
+int agregarCliente(struct Tienda *tienda, char *rut, char *nombre, int edad, int tipoPase, long valorPase);
+
+int modificarClienteYPase(struct Tienda *tienda, char *rut);
+
+int eliminarClienteYPase(struct Tienda *tienda, char *rut);
+
+void listarClientesYPases(struct NodoCliente *head);
+
+void listarClientesEnTienda(struct NodoCliente *head);
+
+/*===============================================================================================================
+ * Chhristopher
+ =============================================================================================================== */
+int eliminarSala(struct Tienda *tienda, int codigo);
+
+void reporteEstadisticasGenerales(struct Tienda *tienda);
+
+void reporteSalasMasOcupadas(struct Tienda *tienda);
+
+/*===============================================================================================================
+ * CLAUDIO
+ =============================================================================================================== */
+
+void menuPrincipal(struct Tienda *tienda);
+
+int main(void);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
