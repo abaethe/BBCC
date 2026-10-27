@@ -164,7 +164,33 @@ void listarReservasCola(struct ColaReservas *cola);
 void ordenarSalas(struct Tienda *tienda, int criterio);
 
 /* Retorna: 1 si se agrego con exito, 0 si el arreglo esta lleno. */
-int agregarSala(struct Tienda *tienda, struct Sala *nuevaSala);
+int agregarSala(struct Tienda *tienda, struct Sala *nuevaSala){
+   if (tienda == NULL || nuevaSala == NULL){
+      return 0;
+   }
+   if(tienda->pLibreSalas == MAX_SALAS){
+      return 0;
+   }
+   if(nuevaSala->aforoMaximo <=0){
+      printf("el aforo debe ser mayor a 0 \n");
+      return 0;
+   }
+   
+   if(nuevaSala->horaApertura < 0 || nuevaSala->horaApertura > 2359 || nuevaSala->horaApertura %100 >= 60){
+      printf("Hora de apertura invalida\n");
+      return 0;
+
+   }
+   if(nuevaSala->horaCierre < 0 || nuevaSala->horaCierre > 2359 || nuevaSala->horaCierre %100 >= 60){
+      printf("hora de cierre invalida\n");
+      return 0;
+   }
+   if(nuevaSala->horaApertura >=nuevaSala->horaCierre){
+      printf("los datos de hora no coinciden\n");
+      return 0;
+   }
+   
+}
 
 /* Retorna: El indice (posicion >= 0) de la sala en el arreglo, o -1 si no existe.
 Llama a: ordenarSalas con el objetivo de dejar el arreglo ordenado por codigo antes de aplicar la Busqueda Binaria */
