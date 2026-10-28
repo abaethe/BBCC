@@ -111,7 +111,7 @@ struct Sala {
     int horaCierre;
     int aforoMaximo;
     int ocupacionActual;
-    int cantidadTitulos;
+    int cantidadTitulentonos; /*lo escribi mal :()*/
     struct NodoTitulo *raizTitulos; /* ABB */
 };
 
@@ -161,14 +161,66 @@ void listarReservasCola(struct ColaReservas *cola);
  * Cristopher
  =============================================================================================================== */
 
-void ordenarSalas(struct Tienda *tienda, int criterio);
 
-/* Retorna: 1 si se agrego con exito, 0 si el arreglo esta lleno. */
+int buscarSala(struct Tienda *tienda, int codigoBuscado){
+   int i;
+   if(tienda == NULL){
+      return -1;
+   }
+   for(i = 0;i<tienda->pLibreSalas;i++){
+      if(tienda->salas[i]->codigo == codigoBuscado){
+         return i;
+      }
+   }
+   return -1;
+}
+/*Tipo de criterio:
+que no sea 2 (puede ser 1)= ordenar por codigo
+2 = ordenar por ocupacion
+*/
+void ordenarSalas(struct Tienda *tienda, int criterio){
+   int i,j;
+   int pos;
+   struct Sala *aux;
+   if(tienda == NULL){
+      return;
+   }
+   for(i = 0; i<tienda->pLibreSalas-1;i++){
+      pos = i;
+      for(j = i + 1;j<tienda->pLibreSalas;j++){
+         if(criterio == 2){
+            if(tienda->salas[j]->ocupacionActual > tienda->salas[pos]->ocupacionActual){
+               pos = j;
+            }
+
+         }
+         else{
+            if(tienda->salas[j]->codigo < tienda->salas[pos]->codigo){
+               pos = j;
+            }
+         }
+         
+      }
+      if(pos != i){
+         aux = tienda->salas[i];
+         tienda->salas[i] = tienda->salas[pos];
+         tienda->salas[pos] = aux;
+      }
+   }
+
+}
+
+/* Retorna: 1 si se agrego con exito, 0 si el arreglo esta lleno o posea cualquier otro inconveniente. */
 int agregarSala(struct Tienda *tienda, struct Sala *nuevaSala){
    if (tienda == NULL || nuevaSala == NULL){
       return 0;
    }
-   if(tienda->pLibreSalas == MAX_SALAS){
+   if(tienda->pLibreSalas >= MAX_SALAS){
+      printf("No hay espacio para mas salas.\n");
+      return 0;
+   }
+   if(buscarSala(tienda,nuevaSala->codigo)!= -1){
+      printf("Ya existe una sala con ese codigo \n");
       return 0;
    }
    if(nuevaSala->aforoMaximo <=0){
@@ -189,18 +241,124 @@ int agregarSala(struct Tienda *tienda, struct Sala *nuevaSala){
       printf("los datos de hora no coinciden\n");
       return 0;
    }
-   
-}
+   /*aqui se definen la cantidad de datos que hay dentro de la sala nueva para que despues se vayan rellenando*/
+   nuevaSala->ocupacionActual = 0;
+   nuevaSala->cantidadTitulentonos = 0;
+   nuevaSala->raizTitulos = NULL; /*Esta es el arbol*/
 
-/* Retorna: El indice (posicion >= 0) de la sala en el arreglo, o -1 si no existe.
-Llama a: ordenarSalas con el objetivo de dejar el arreglo ordenado por codigo antes de aplicar la Busqueda Binaria */
-int buscarSala(struct Tienda *tienda, int codigoBuscado);
+   /*aqui se guarda en la primera poscion libre que seria la que sigue, y pLibre se agrega una para contar la nueva sala que agregamos*/
+   tienda->salas[tienda->pLibreSalas] = nuevaSala;
+   tienda->pLibreSalas++;
+   return 1;
+}
 
 /* Retorna: 1 si se modifico con exito, 0 si no se encontro la sala.
 Llama a: buscarSala con el objetivo de encontrar la posicion exacta de la sala que se quiere editar */
-int modificarSala(struct Tienda *tienda, int codigo);
+int modificarSala(struct Tienda *tienda, int codigo){
+   int pos;
+   int opcion;
+   int nuevaApertura,nuevoCierre,nuevoAforo;
+   struct Sala *s;
+   if(tienda ==NULL){
+      return 0;
+   }
+   pos= buscarSala(tienda,codigo);
+   if(pos == -1 ){
+      printf("No existe una sala con ese codigo");
+      return 0;
+   }
+   s = tienda->salas[pos];
+   do{
+      printf("-------------------------------------\n");
+      printf("Selecciona lo que quieres modificar\n");
+      printf("Nombre = 1\n");
+      printf("Tematica = 2\n");
+      printf("Encargado = 3 \n");
+      printf("horario = 4\n");
+      printf("Aforo = 5\n");
+      printf("-------------------------------------\n");
+      printf("Para salir = 0\n");
+      scanf("%d",&opcion);
+      if (opcion == 1){
+         printf("Nuevo nombre : ");
+         scanf("%s",s->nombre);
+      }
+      else if (opcion == 2 ){
+         printf("Nueva Tematica : ");
+         scanf("%s",s->tematica);
+      }
+      else if (opcion == 3 ){
+         printf("Nuevo encargado : ");
+         scanf("%s",s->encargado);
+      }  
+      else if (opcion == 4 ){
+         printf("Nueva hora de apertura (HHMM) : ");
+         scanf("%d",&nuevaApertura);
+         printf("Nueva hora de cierre (HHMM) : ");
+         scanf("%d",&nuevoCierre);
 
-void listarSalas(struct Tienda *tienda);
+         if(nuevaApertura < 0 || nuevaApertura > 2359 || nuevaApertura % 100 >= 60){
+            printf("Hora de apertura invalida, no se modifico el horario.\n");
+         }
+         else if(nuevoCierre < 0 || nuevoCierre >2359 || nuevoCierre %100 >=60){
+            printf("Hora de cierre invalida, no se modifico el horario\n");
+         }
+         else if(nuevaApertura >=nuevoCierre){
+            printf("LA apertura debe ser anterior al cierre , no se modifico el horario \n");
+         }
+         else{
+            s->horaApertura = nuevaApertura;
+            s->horaCierre = nuevoCierre;
+            printf("Horario Actualizado \n");
+         }
+
+      }
+      else if(opcion == 5){
+         printf("Nuevo aforo maximo : ");
+         scanf("%d",&nuevoAforo);
+         if (nuevoAforo <= 0 ){
+            printf("El aforo debe ser mayor a 0 por lo que no se modifico\n");
+         }
+         else if (nuevoAforo < s->ocupacionActual){
+            printf("Hay %d personas en la sala, el aforo no puede ser menor\n",s->ocupacionActual);
+         }
+         else{
+            s->aforoMaximo = nuevoAforo;
+            printf("Aforo Actualizado \n");
+         }
+      }
+      else if(opcion != 0){
+         printf("Opcion invalida \n");
+      }
+
+   } while(opcion != 0);
+   return 1;
+}
+
+void listarSalas(struct Tienda *tienda){
+   int i;
+   if(tienda ==NULL){
+      return;
+   }
+   if(tienda->pLibreSalas == 0){
+      printf("No hay salas registradas en la tienda\n");
+      return;
+   }
+   
+   for(i = 0; i<tienda->pLibreSalas;i++){
+      printf("---------------Sala n_%d---------------\n",i+1);
+      printf("Codigo : %d\n",tienda->salas[i]->codigo);
+      printf("Nombre : %s\n",tienda->salas[i]->nombre);
+      printf("Tematica : %s\n",tienda->salas[i]->tematica);
+      printf("Encargado : %s\n",tienda->salas[i]->encargado);
+      printf("Horario desde/hasta : %02d:%02d - %02d:%02d\n",tienda->salas[i]->horaApertura /100,tienda->salas[i]->horaApertura %100,tienda->salas[i]->horaCierre / 100, tienda->salas[i]->horaCierre %100);
+      printf("Aforo Maximo de personas : %d\n",tienda->salas[i]->aforoMaximo);
+      printf("Ocupacion : %d\n",tienda->salas[i]->ocupacionActual);
+      printf("Cantidad de titulos : %d\n",tienda->salas[i]->cantidadTitulentonos);
+      printf("------------------------------\n");
+   }
+
+}
 
 /*===============================================================================================================
  * Benja Grez culo
@@ -233,7 +391,7 @@ void listarTitulosABB(struct NodoTitulo *raiz);
 int calcularTiempoEsperaTitulo(struct Titulo *titulo);
 
 void reporteTituloMasEsperado(struct Tienda *tienda);
-
+#define
 void reporteTituloMasSolicitado(struct Tienda *tienda);
 
 void listarTitulosAgotados(struct Tienda *tienda);
@@ -276,12 +434,90 @@ void listarClientesEnTienda(struct NodoCliente *head);
 /* Retorna: 1 si se elimino la sala y se compacto el arreglo, 0 si no se encontro.
    Llama a: buscarSala para ubicar la sala, y a
    eliminarTituloABB en ciclo con el objetivo de borrar todos los comics de su arbol y liberar memoria antes de borrar la sala. */
-int eliminarSala(struct Tienda *tienda, int codigo);
+int eliminarSala(struct Tienda *tienda, int codigo){
+   int pos;
+   int i;
+   struct Sala *s;
 
-void reporteEstadisticasGenerales(struct Tienda *tienda);
+   if(tienda == NULL){
+      return 0;
+   }
+   pos = buscarSala(tienda,codigo);
+   if(pos == -1 ){
+      printf("No existe una sala con ese codigo\n");
+      return 0;
+   }
+   s = tienda->salas[pos];
+   if(s->ocupacionActual > 0){
+      printf("hay clientes en la sala\n");
+      return 0;
+   }
+   /*mientras haya arbol, borra el titulo que estsa en la raiz y quedate con la nueva raiz*/
+   while(s->raizTitulos !=NULL){
+      
+      s->raizTitulos = eliminarTituloABB(s->raizTitulos,s->raizTitulos->datos->codigo);
+   }
+   free(s);
+   for(i = pos ; i<tienda->pLibreSalas -1 ; i++){
+      tienda->salas[i] = tienda->salas[i+1];
+   }
+   tienda->pLibreSalas--;
+   tienda->salas[tienda->pLibreSalas] = NULL;
+
+   return 1;
+}
+
+void reporteEstadisticasGenerales(struct Tienda *tienda){
+   int porcentaje;
+   if(tienda == NULL){
+      return;
+   }
+   printf("================ESTADISTICAS GENERALES================\n");
+   printf("Tienda : %s / Ciudad de la tienda : %s\n",tienda->nombre,tienda->ciudad);
+
+   printf("Hoy Ingresaron %d Clientes\n",tienda->ingresosDia);
+   printf("Ahora hay %d Clientes dentro\n",tienda->clientesDentro);
+   printf("El aforo maximo de la tienda es de %d persona(s)\n",tienda->aforoMaximo);
+   printf("Se vendieron un total de %d pases\n",tienda->pasesVendidos);
+   printf("Se utilizaron un total de %d pases\n",tienda->pasesUtilizados);
+   printf("Se recaudo un total de %ld pesos\n",tienda->recaudacionPases);
+   printf("Hay un total de %d sala(s)\n",tienda->pLibreSalas);
+
+   /*Paso opcional:Mostrar el porcentaje de ocupacion de la tienda*/
+   if(tienda->aforoMaximo > 0){
+      porcentaje = tienda->clientesDentro * 100 / tienda->aforoMaximo;
+      printf("Ocupacion de la tienda : %d%%\n",porcentaje);
+   }
+   printf("======================================================\n");
+}
 
 /*Llama a: ordenarSalas con el objetivo de ordenar el arreglo de salas de mayor a menor ocupacion antes de mostrarlas. */
-void reporteSalasMasOcupadas(struct Tienda *tienda);
+void reporteSalasMasOcupadas(struct Tienda *tienda){
+   int i; 
+   int porcentaje;
+   struct Sala *s;
+   if(tienda == NULL){
+      return ;
+   }
+   if(tienda->pLibreSalas == 0){
+      printf("No hay salas Registradas\n");
+      return;
+   }
+   ordenarSalas(tienda,2);/*aqui se ordena por ocupacion*/
+   printf("================SALAS MAS OCUPADAS================\n");
+   for(i = 0;i<tienda->pLibreSalas;i++){
+      s = tienda->salas[i];
+      porcentaje = s->ocupacionActual * 100 / s->aforoMaximo;
+      printf("Puesto %d\n", i + 1);
+      printf("Sala: [%d] %s\n", s->codigo, s->nombre);
+      printf("Ocupacion: %d / %d personas\n", s->ocupacionActual, s->aforoMaximo);
+      printf("Porcentaje de ocupacion: %d%%\n", porcentaje);
+      if(porcentaje >= 80){
+         printf("ALERTA : sala cerca de su aforo maximo\n");
+      }
+   }
+   ordenarSalas(tienda,1);/*se vuelve a ordenar para que quede como estaba antes*/
+}
 
 /*===============================================================================================================
  * CLAUDIO
