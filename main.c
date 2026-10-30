@@ -142,14 +142,12 @@ struct NodoTitulo* agregarTituloABB(struct NodoTitulo *raiz, struct Titulo *nuev
     if (raiz == NULL) {
         struct NodoTitulo *nuevoNodo = (struct NodoTitulo *)malloc(sizeof(struct NodoTitulo));
 
-
         /* Asignación de datos */
-        nuevoNodo->datos = nuevoTitulo  ;
+        nuevoNodo->datos = nuevoTitulo;
         nuevoNodo->izq = NULL;
         nuevoNodo->der = NULL;
 
         return nuevoNodo;
-
     }
 
     /* Caso en que arbol no este vacío */
@@ -191,11 +189,13 @@ struct Titulo* buscarTituloABB(struct NodoTitulo *raiz, int codigo) {
 }
 
 int modificarTitulo(struct Titulo *titulo) {
+    int opcion;
+    int nuevoStock; 
+
     if (titulo == NULL) {
         return 0; /* En caso que puntero sea NULL */
     }
 
-    int opcion;
     printf("¿Qué desea modificar de %s?\n", titulo->nombre);
     printf("1. Sumar stock (ingreso de despacho)\n");
     printf("2. Cambiar estado a Descatalogado (TIT_DESC)\n");
@@ -203,7 +203,6 @@ int modificarTitulo(struct Titulo *titulo) {
     scanf("%d", &opcion);
 
     if (opcion == 1) {
-        int nuevoStock;
         printf("Ingrese la cantidad de stock a sumar: ");
         scanf("%d", &nuevoStock);
         titulo->stock += nuevoStock;
@@ -274,12 +273,13 @@ struct NodoTitulo* eliminarTituloABB(struct NodoTitulo *raiz, int codigo) {
     /* Se encontró el código */
     else {
         struct NodoTitulo *aux = raiz; /* Guardamos el nodo a borrar en aux */
+        int numReserva; 
 
         /* VACIAR LA COLA DE RESERVAS */
         /* Llamamos a eliminarReservaCola en un ciclo hasta que la fila quede vacía */
         if (raiz->datos->listaEspera != NULL) {
             while (raiz->datos->listaEspera->frente != NULL) {
-                int numReserva = raiz->datos->listaEspera->frente->datos->numero;
+                numReserva = raiz->datos->listaEspera->frente->datos->numero;
                 printf("Eliminando reserva %d (el titulo sera borrado del sistema).\n", numReserva);
                 eliminarReservaCola(raiz->datos->listaEspera, numReserva);
             }
@@ -300,7 +300,7 @@ struct NodoTitulo* eliminarTituloABB(struct NodoTitulo *raiz, int codigo) {
             free(aux->datos); /* Liberamos el struct Titulo */
             free(aux);        /* Liberamos el Nodo del árbol */
         }
-        // Caso donde tiene ambos 'hijos'
+        /* Caso donde tiene ambos 'hijos' */
         else {
             /* Como vamos a sobrescribir los datos con el reemplazo, */
             /* liberamos la memoria del Titulo original ahora */
@@ -336,6 +336,9 @@ void listarTitulosABB(struct NodoTitulo *raiz) {
 }
 
 int calcularTiempoEsperaTitulo(struct Titulo *titulo) {
+    int despachosNecesarios; 
+    int diasEspera;
+
     if (titulo == NULL || titulo->listaEspera == NULL || titulo->listaEspera->frente == NULL) {
         return -1;
     }
@@ -344,13 +347,13 @@ int calcularTiempoEsperaTitulo(struct Titulo *titulo) {
         return -1;
     }
 
-    int despachosNecesarios = titulo->listaEspera->totalEjemplares / titulo->ejemplaresPorDespacho;
+    despachosNecesarios = titulo->listaEspera->totalEjemplares / titulo->ejemplaresPorDespacho;
 
     if (titulo->listaEspera->totalEjemplares % titulo->ejemplaresPorDespacho != 0) {
         despachosNecesarios++;
     }
 
-    int diasEspera = despachosNecesarios * titulo->diasEntreDespachos;
+    diasEspera = despachosNecesarios * titulo->diasEntreDespachos;
 
     return diasEspera;
 }
@@ -358,10 +361,12 @@ int calcularTiempoEsperaTitulo(struct Titulo *titulo) {
 /* Función Auxiliar para reporteTituloMasEsperado */
 void buscarMasEsperadoABB(struct NodoTitulo *nodo, struct Titulo **mejor, int *maxTiempo) {
     if (nodo != NULL) {
+        int tiempoActual; 
+        
         buscarMasEsperadoABB(nodo->izq, mejor, maxTiempo);
 
         /* Se el tiempo usando la función que se hizo anteriormente */
-        int tiempoActual = calcularTiempoEsperaTitulo(nodo->datos);
+        tiempoActual = calcularTiempoEsperaTitulo(nodo->datos);
         if (tiempoActual > *maxTiempo) {
             *maxTiempo = tiempoActual;
             *mejor = nodo->datos;
@@ -372,11 +377,11 @@ void buscarMasEsperadoABB(struct NodoTitulo *nodo, struct Titulo **mejor, int *m
 }
 
 void reporteTituloMasEsperado(struct Tienda *tienda) {
-    if (tienda == NULL) return;
-
-    struct Titulo *masEsperado = NULL;
+    struct Titulo *masEsperado = NULL; 
     int maxTiempo = -1;
     int i;
+
+    if (tienda == NULL) return;
 
     for (i = 0; i < tienda->pLibreSalas; i++) {
         if (tienda->salas[i] != NULL) {
@@ -406,11 +411,11 @@ void buscarMasSolicitadoABB(struct NodoTitulo *nodo, struct Titulo **mejor, int 
 }
 
 void reporteTituloMasSolicitado(struct Tienda *tienda) {
-    if (tienda == NULL) return;
-
-    struct Titulo *masSolicitado = NULL;
+    struct Titulo *masSolicitado = NULL; 
     int maxSol = -1;
     int i;
+
+    if (tienda == NULL) return;
 
     for (i = 0; i < tienda->pLibreSalas; i++) {
         if (tienda->salas[i] != NULL) {
@@ -440,10 +445,10 @@ void imprimirAgotadosABB(struct NodoTitulo *nodo, int *encontrados) {
 }
 
 void listarTitulosAgotados(struct Tienda *tienda) {
-    if (tienda == NULL) return;
-
-    int encontrados = 0;
+    int encontrados = 0; 
     int i;
+
+    if (tienda == NULL) return;
 
     printf("\n--- REPORTE DE TITULOS AGOTADOS ---\n");
     for (i = 0; i < tienda->pLibreSalas; i++) {
