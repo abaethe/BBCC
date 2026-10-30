@@ -111,7 +111,7 @@ struct Sala {
     int horaCierre;
     int aforoMaximo;
     int ocupacionActual;
-    int cantidadTitulentonos; /*lo escribi mal :()*/
+    int cantidadTitulos; 
     struct NodoTitulo *raizTitulos; /* ABB */
 };
 
@@ -243,7 +243,7 @@ int agregarSala(struct Tienda *tienda, struct Sala *nuevaSala){
    }
    /*aqui se definen la cantidad de datos que hay dentro de la sala nueva para que despues se vayan rellenando*/
    nuevaSala->ocupacionActual = 0;
-   nuevaSala->cantidadTitulentonos = 0;
+   nuevaSala->cantidadTitulos = 0;
    nuevaSala->raizTitulos = NULL; /*Esta es el arbol*/
 
    /*aqui se guarda en la primera poscion libre que seria la que sigue, y pLibre se agrega una para contar la nueva sala que agregamos*/
@@ -354,7 +354,7 @@ void listarSalas(struct Tienda *tienda){
       printf("Horario desde/hasta : %02d:%02d - %02d:%02d\n",tienda->salas[i]->horaApertura /100,tienda->salas[i]->horaApertura %100,tienda->salas[i]->horaCierre / 100, tienda->salas[i]->horaCierre %100);
       printf("Aforo Maximo de personas : %d\n",tienda->salas[i]->aforoMaximo);
       printf("Ocupacion : %d\n",tienda->salas[i]->ocupacionActual);
-      printf("Cantidad de titulos : %d\n",tienda->salas[i]->cantidadTitulentonos);
+      printf("Cantidad de titulos : %d\n",tienda->salas[i]->cantidadTitulos);
       printf("------------------------------\n");
    }
 
