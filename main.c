@@ -461,3 +461,39 @@ void listarTitulosAgotados(struct Tienda *tienda) {
         printf("¡Excelente! No hay ningun titulo agotado en la tienda.\n");
     }
 }
+
+void ordenarSalas(struct Tienda *tienda, int criterio) {
+    int i, j, posOptima;
+    struct Sala *aux;
+
+    /* Validación por si no hay tienda o hay 1 sala o menos*/
+    if (tienda == NULL || tienda->pLibreSalas <= 1) {
+        return;
+    }
+
+    /* Selection Sort */
+    for (i = 0; i < tienda->pLibreSalas - 1; i++) {
+        posOptima = i; /* Suponemos que la posición actual tiene el valor que buscamos */
+
+        for (j = i + 1; j < tienda->pLibreSalas; j++) {
+            if (criterio == 2) {
+                /* Criterio de ordenamiento descendente */
+                if (tienda->salas[j]->ocupacionActual > tienda->salas[posOptima]->ocupacionActual) {
+                    posOptima = j;
+                }
+            } else {
+                /* Criterio de Ordenamiento ascendente */
+                if (tienda->salas[j]->codigo < tienda->salas[posOptima]->codigo) {
+                    posOptima = j;
+                }
+            }
+        }
+
+        /* Si encontramos un elemento optimo en el resto del arreglo, hacemos el swap */
+        if (posOptima != i) {
+            aux = tienda->salas[i];
+            tienda->salas[i] = tienda->salas[posOptima];
+            tienda->salas[posOptima] = aux;
+        }
+    }
+}
